@@ -147,10 +147,10 @@ int main(void)
   ADMUX=0x8f;   // 1.1V internal reference, temperature sensor channel
   ADCSRA=0xdf; // start conversion
   //
-  // configure watchdog to interrupt&reset, 4 sec timeout
+  // configure watchdog
   //
-  WDTCR=0x18; // enable watchdog change
-  WDTCR=0xe8; // set timeout, watchdog enabled
+  WDTCR=(1<<WDE) | (1<<WDCE);
+  WDTCR=(1<<WDE) | (1<<WDIE) | (1<<WDP2) | (1<<WDP1) | (1<<WDP0) ; // 2sec timout, interrupt+reset
   //
   set_sleep_mode(SLEEP_MODE_IDLE);
   sleep_enable();
@@ -159,7 +159,7 @@ int main(void)
   while (1) {
     sleep_cpu();
     wdt_reset();
-    WDTCR|=0x40; // set watchdog interrupt enabled flag again
+    WDTCR=(1<<WDIE) | (1<<WDP2) | (1<<WDP1) | (1<<WDP0) ; // 2sec timout, interrupt+reset
     if (ticks>32) {
       ticks=0;
       terminal.clear();
